@@ -1,0 +1,19 @@
+2017 Stack Overflow Data:
+
+##Concerns:
+Only ~12k of the survey submissions report salary
+Top salary listed is under 200K, doesn't include total compensation. Results may be pretty meaningless without stock grants, bonuses, etc. Data is very high dimensional, we probably don't have enough samples.
+
+##Questions:
+Given current skills/experience, how much of a pay cut (or raise) can you expect moving to working from home?
+
+##Application:
+Could be used by non-technical employers to guess what a developer should be paid.
+Could be used to find underpaid developers. Could help them find a new job.
+
+##Cleaning up data:
+Can get rid of the Ex* columns
+Columns to split by ";":
+    *Type
+    JobProfile
+Turn everything with ['Disagree', 'Somewhat agree', 'Strongly disagree', nan, 'Agree', 'Strongly agree'] into a 1-5 column to use in linear regression.
