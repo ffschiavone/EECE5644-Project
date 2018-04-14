@@ -61,18 +61,19 @@ def get_data():
 def run_decision_tree():
     x_train, x_test, y_train, y_test = get_data()
     best_rms = 100000
-    # for min_samples in range(5, 50):
-    regr = DecisionTreeRegressor(max_depth=28, min_samples_split=175)
+    regr = DecisionTreeRegressor(max_depth=28, min_samples_split=175, min_samples_leaf=3, max_leaf_nodes=129)
     regr.fit(x_train, y_train)
     predictions = regr.predict(x_test)
-    errors = predictions - y_test
-    # plt.hist(errors, bins=30, histtype='step')
-    # plt.show()
+    errors = []
+    for index in range(len(predictions)):
+        errors.append(predictions[index] - y_test[index][0])
+    plt.hist(errors, bins=30, histtype='step')
+    plt.show()
     score = regr.score(x_test, y_test)
     rms = sqrt(mean_squared_error(y_test, predictions))
-    # if rms < best_rms:
-    #     best_rms = rms
-    print('New best rms: {0} Score: {1}'.format(rms, score, min_samples))
+    if rms < best_rms:
+        best_rms = rms
+    print('New best rms: {0} Score: {1}'.format(rms, score))
 
 
 if __name__ == '__main__':
