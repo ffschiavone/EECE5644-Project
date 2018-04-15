@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from math import sqrt
 from sklearn.metrics import mean_squared_error
+from sklearn import tree
+import graphviz
 
 
 # Convert a Pandas dataframe to the x,y inputs that TensorFlow needs
@@ -40,6 +42,17 @@ def reduce_columns(df):
     return df[cleaned_columns_to_keep].dropna()
 
 
+def get_feature_keys():
+    with open('../column_mapping.json', 'r') as f:
+        column_mapping = json.load(f)
+    # Important columns: YearsProgram, YearsCodedJob, Country, ImportantBenifits, CompanyType
+    original_columns_to_keep = ['YearsProgram', 'YearsCodedJob', 'Country', 'ImportantBenefits', 'CompanyType']
+    cleaned_columns_to_keep = []
+    for original_col in original_columns_to_keep:
+        cleaned_columns_to_keep += column_mapping[original_col]
+    return cleaned_columns_to_keep
+
+
 def parse_csv():
     df = pd.read_csv('../cleaned_data.csv')
     df = reduce_columns(df)
@@ -65,15 +78,22 @@ def run_decision_tree():
     regr.fit(x_train, y_train)
     predictions = regr.predict(x_test)
     errors = []
-    for index in range(len(predictions)):
-        errors.append(predictions[index] - y_test[index][0])
-    plt.hist(errors, bins=30, histtype='step')
-    plt.show()
+    # for index in range(len(predictions)):
+    #     errors.append(predictions[index] - y_test[index][0])
+    # plt.hist(errors, bins=30, histtype='step')
+    # plt.show()
     score = regr.score(x_test, y_test)
     rms = sqrt(mean_squared_error(y_test, predictions))
     if rms < best_rms:
         best_rms = rms
     print('New best rms: {0} Score: {1}'.format(rms, score))
+
+    # dot_data = tree.export_graphviz(regr, out_file=None)
+    # graph = graphviz.Source(dot_data)
+    dot_data = tree.export_graphviz(regr, out_file=None, feature_names=get_feature_keys(), class_names=['Salary'],
+                                    filled=True, rounded=True, special_characters=True)
+    graph = graphviz.Source(dot_data)
+    graph.render("Decision Based Regression Tree")
 
 
 if __name__ == '__main__':
