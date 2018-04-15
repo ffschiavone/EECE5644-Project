@@ -71,13 +71,14 @@ def run_knn_regression(column_weights, solve_column, test_size):
 
     x_train, x_test, y_train, y_test = get_data(column_weights, solve_column, test_size)
     n_samples = len(x_train)
+
     n_neighbors = 10
     if n_samples == 0:
         return column_weights.keys(), 1000000
     elif n_samples < n_neighbors:
         n_neighbors = n_samples
 
-    regr = KNeighborsRegressor(n_neighbors=n_neighbors, weights='distance', algorithm='auto', leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=1)
+    regr = KNeighborsRegressor(n_neighbors=10, weights='distance', algorithm='auto', leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=1)
     regr.fit(x_train, y_train)
     predictions = regr.predict(x_test)
     errors = []
@@ -89,7 +90,7 @@ def run_knn_regression(column_weights, solve_column, test_size):
     #plt.show()
     score = regr.score(x_test, y_test)
     rms = sqrt(mean_squared_error(y_test, predictions))
-    return column_weights.keys(), rms
+    return column_weights.keys(), rms, score
 
 def rank_indicators(solve_column, test_size):
     with open('../column_mapping.json', 'r') as f:
@@ -108,12 +109,12 @@ def rank_indicators(solve_column, test_size):
 
 if __name__ == '__main__':
     column_weights = dict()
-    column_weights['YearsCodedJobPast'] = 1
+    #column_weights['YearsCodedJobPast'] = 1
     column_weights['YearsCodedJob'] = 1
     column_weights['Country'] = 11
     column_weights['YearsProgram'] = 3
 
     for x in range(0, 10):
-        columns, rms = run_knn_regression(column_weights, 'Salary', 0.2)
-        print(rms)
+        columns, rms, score = run_knn_regression(column_weights, 'Salary', 0.2)
+        print(rms, score)
     #print(rank_indicators('Salary', 0.2))
