@@ -11,7 +11,8 @@ from sklearn import tree
 import graphviz
 
 
-# Convert a Pandas dataframe to the x,y inputs that TensorFlow needs
+# Convert a Pandas dataframe to the x,y inputs that TensorFlow or scikit needs
+# currently unused see get_data() commented out code for usage instead of reducing columns in parse csv
 def to_xy(df, target):
     result = []
     for x in df.columns:
@@ -30,6 +31,7 @@ def to_xy(df, target):
         return df.as_matrix(result).astype(np.float32), df.as_matrix([target]).astype(np.float32)
 
 
+# reduces the columns in the dataframe down to just selected columns in the data for feature selection
 def reduce_columns(df):
     with open('../column_mapping.json', 'r') as f:
         column_mapping = json.load(f)
@@ -42,6 +44,7 @@ def reduce_columns(df):
     return df[cleaned_columns_to_keep].dropna()
 
 
+# used in graphviz to properly generate labels for all features.
 def get_feature_keys():
     with open('../column_mapping.json', 'r') as f:
         column_mapping = json.load(f)
@@ -53,12 +56,14 @@ def get_feature_keys():
     return cleaned_columns_to_keep
 
 
+# what is used to read the data and do feature selection
 def parse_csv():
     df = pd.read_csv('../shuffled.csv')
     df = reduce_columns(df)
     return df
 
 
+# implemented to allow easy switching between all of the data vs the reduced columns
 def get_data():
     return parse_csv()
     # x, y = to_xy(df, 'Salary')
@@ -71,6 +76,7 @@ def get_data():
     # return train_test_split(x, y, test_size=0.20)
 
 
+# what is called by main, where everything in this file starts from
 def run_decision_tree():
     avg_rms = 0
     # x_train, x_test, y_train, y_test = get_data()
@@ -114,5 +120,6 @@ def run_decision_tree():
     # graph.render("Decision Based Regression Tree")
 
 
+# main!
 if __name__ == '__main__':
     run_decision_tree()
