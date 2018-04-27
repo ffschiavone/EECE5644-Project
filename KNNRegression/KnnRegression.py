@@ -84,7 +84,7 @@ def run_knn_regression(column_weights, solve_column, num_train_set, num_neighbor
         predictions = regr.predict(test_without_salary)
         rms_sum += sqrt(mean_squared_error(test['Salary'], predictions))
         
-        # Generates a bucket graph of RMS Errors
+        # Generates a RMS Errors for bucket graphs
         if print_graph:
             errors = []
             for index in range(len(predictions)):
